@@ -54,8 +54,12 @@ ProbablyEngine.rotation.register_custom(270, 'Tao\'s Mistweaver', {
 
   -- Detox if needed. 
   { '!Detox', { 'player.buff(Gift of the Titans)', '@coreHealing.needsDispelled("Mark of Arrogance")' }, nil },
+  -- { '!Detox', { '@coreHealing.needsDispelled("Displaced Energy")', 'z_z work to do' }, nil },
   { '!Detox', '@coreHealing.needsDispelled("Shadow Word: Bane")', nil },
   { '!Detox', '@coreHealing.needsDispelled("Corrosive Blood")', nil },
+  { '!Detox', '@coreHealing.needsDispelled("Harden Flesh")', nil },
+  { '!Detox', '@coreHealing.needsDispelled("Torment")', nil },
+  { '!Detox', '@coreHealing.needsDispelled("Breath of Fire")', nil },
   { '!Detox', { 'toggle.detox', '@mistweaver.detox()' }, nil },
 
   { 'Mana Tea', {
