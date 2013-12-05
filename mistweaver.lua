@@ -53,10 +53,10 @@ ProbablyEngine.rotation.register_custom(270, 'Tao\'s Mistweaver', {
   { 'Life Cocoon', { 'modifier.cooldowns', 'tank.health < 10' }, 'tank' },
 
   -- Detox if needed. 
-  { '!Detox', { 'toggle.detox', '@mistweaver.detox()' }, nil },
   { '!Detox', { 'player.buff(Gift of the Titans)', '@coreHealing.needsDispelled("Mark of Arrogance")' }, nil },
   { '!Detox', '@coreHealing.needsDispelled("Shadow Word: Bane")', nil },
   { '!Detox', '@coreHealing.needsDispelled("Corrosive Blood")', nil },
+  { '!Detox', { 'toggle.detox', '@mistweaver.detox()' }, nil },
 
   { 'Mana Tea', {
     'player.buff(Mana Tea).count >= 2',
