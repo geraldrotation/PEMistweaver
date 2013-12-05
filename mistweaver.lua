@@ -33,7 +33,7 @@ ProbablyEngine.rotation.register_custom(270, 'Tao\'s Mistweaver', {
     '!player.buff(Diffuse Magic)',
   }},
 
-  -- Insta-kill single target when available 
+	-- Insta-kill single target when available 
   { 'Touch of Death', {
     'modifier.cooldowns',
     'player.buff(Death Note)'
@@ -46,10 +46,10 @@ ProbablyEngine.rotation.register_custom(270, 'Tao\'s Mistweaver', {
 
   -- { 'Grapple Weapon', { '@mistweaver.grappleWeapon(92)' }, nil },
 
-  -- Thunder Focus Tea on CD 
+	-- Thunder Focus Tea on CD 
   { 'Thunder Focus Tea', 'modifier.cooldowns' },
 
-  -- Life Cocoon on the tank if he's low. 
+	-- Life Cocoon on the tank if he's low. 
   { 'Life Cocoon', { 'modifier.cooldowns', 'tank.health < 10' }, 'tank' },
 
   -- Detox if needed. 
