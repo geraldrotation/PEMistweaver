@@ -12,6 +12,12 @@ local function getHealth(unit, percent)
 
   return UnitHealthMax(unit) - UnitHealth(unit) + incHeals - absorbs
 end
+
+local ignoreDebuffs = {
+  'Mark of Arrogance',
+  'Displaced Energy'
+}
+
 ProbablyEngine.library.register('mistweaver', {
   detox = function(spell)
     local prefix = (IsInRaid() and 'raid') or 'party'
@@ -22,8 +28,18 @@ ProbablyEngine.library.register('mistweaver', {
           local debuffName, _, _, _, dispelType, duration, expires, _, _, _, spellID, _, isBossDebuff, _, _, _ = UnitDebuff(unit, j)
             
           if dispelType and dispelType == 'Magic' or dispelType == 'Poison' or dispelType == 'Disease' then
-            ProbablyEngine.dsl.parsedTarget = unit
-            return true
+            local ignore = false
+            for k = 1, #ignoreDebuffs do
+              if debuffName == ignoreDebuffs[k] then
+                ignore = true
+                break
+              end
+            end
+
+            if not ignore then
+              ProbablyEngine.dsl.parsedTarget = unit
+              return true
+            end
           end
             
           if not debuffName then
