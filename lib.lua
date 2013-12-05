@@ -2,6 +2,16 @@
 
 mistweaverLastSoothingTarget = nil
 
+local function getHealth(unit, percent)
+  local incHeals = UnitGetIncomingHeals(unit) or 0
+  local absorbs = UnitGetTotalHealAbsorbs(unit) or 0
+
+  if percent then
+    return (UnitHealth(unit) + incHeals - absorbs) / UnitHealthMax(unit)
+  end
+
+  return UnitHealthMax(unit) - UnitHealth(unit) + incHeals - absorbs
+end
 ProbablyEngine.library.register('mistweaver', {
   detox = function(spell)
     local prefix = (IsInRaid() and 'raid') or 'party'
@@ -30,7 +40,7 @@ ProbablyEngine.library.register('mistweaver', {
     local minHeal = 1.2 * (GetSpellBonusDamage(2) * 1.4336 + 20552)
 
     if UnitChannelInfo('player') == 'Soothing Mist' then
-      local focusPercentage = (UnitHealth(mistweaverLastSoothingTarget) + UnitGetIncomingHeals(mistweaverLastSoothingTarget) - UnitGetTotalHealAbsorbs(mistweaverLastSoothingTarget)) / UnitHealthMax(mistweaverLastSoothingTarget)
+      local focusPercentage = getHealth(mistweaverLastSoothingTarget, true)
       if focusPercentage > stopThreshold / 100 then
         SpellStopCasting()
         return false
@@ -45,7 +55,7 @@ ProbablyEngine.library.register('mistweaver', {
       for i = -1, GetNumGroupMembers() - 1 do
         local unit = (i == -1 and 'target') or (i == 0 and 'player') or prefix .. i
         if IsSpellInRange('Soothing Mist', unit) then
-          local percentage = (UnitHealth(unit) + UnitGetIncomingHeals(unit) - UnitGetTotalHealAbsorbs(unit)) / UnitHealthMax(unit)
+          local percentage = getHealth(unit, true)
           if percentage < emergencyThreshold / 100 then
             ProbablyEngine.dsl.parsedTarget = unit
             mistweaverLastSoothingTarget = unit
@@ -64,7 +74,8 @@ ProbablyEngine.library.register('mistweaver', {
     for i = -1, GetNumGroupMembers() - 1 do
       local unit = (i == -1 and 'target') or (i == 0 and 'player') or prefix .. i
       if IsSpellInRange('Soothing Mist', unit) then
-        local percentage = (UnitHealth(unit) + UnitGetIncomingHeals(unit) - UnitGetTotalHealAbsorbs(unit)) / UnitHealthMax(unit)
+        local percentage = getHealth(unit, true)
+        local diff = getHealth(unit)
         if percentage < threshold / 100 and diff > missingHealth then
           missingHealth = diff
           ProbablyEngine.dsl.parsedTarget = unit
@@ -85,7 +96,7 @@ ProbablyEngine.library.register('mistweaver', {
       return false
     end
 
-    local percentage = (UnitHealth(mistweaverLastSoothingTarget) + UnitGetIncomingHeals(mistweaverLastSoothingTarget) - UnitGetTotalHealAbsorbs(mistweaverLastSoothingTarget)) / UnitHealthMax(mistweaverLastSoothingTarget)
+    local percentage = getHealth(mistweaverLastSoothingTarget, true)
 
     if percentage < threshold / 100 then
       ProbablyEngine.dsl.parsedTarget = mistweaverLastSoothingTarget
@@ -112,7 +123,8 @@ ProbablyEngine.library.register('mistweaver', {
             return true
           end
 
-          local diff = UnitHealthMax(unit) - UnitHealth(unit) + UnitGetIncomingHeals(unit) - UnitGetTotalHealAbsorbs(unit)
+          local diff = getHealth(unit)
+
           if diff > minHeal then
             ProbablyEngine.dsl.parsedTarget = unit
             return true
@@ -133,7 +145,7 @@ ProbablyEngine.library.register('mistweaver', {
       for i = 0, GetNumGroupMembers() do
         local unit = (i == 0 and 'player') or prefix .. i
         if UnitAura(unit, 'Renewing Mist') then
-          local diff = UnitHealthMax(unit) - UnitHealth(unit) + UnitGetIncomingHeals(unit) - UnitGetTotalHealAbsorbs(unit)
+          local diff = getHealth(unit)
           missingHealth = missingHealth + math.min(diff, minHeal)
         end
       end
@@ -150,7 +162,7 @@ ProbablyEngine.library.register('mistweaver', {
     for i = -1, GetNumGroupMembers() - 1 do
       local unit = (i == -1 and 'target') or (i == 0 and 'player') or prefix .. i
       if IsSpellInRange('Soothing Mist', unit) == 1 then
-        local diff = UnitHealthMax(unit) - UnitHealth(unit) + UnitGetIncomingHeals(unit) - UnitGetTotalHealAbsorbs(unit)
+        local diff = getHealth(unit)
         if diff > minHeal then
           if lowestHealth == 0 or diff > lowestHealth then
             lowestHealth = diff
@@ -172,7 +184,7 @@ ProbablyEngine.library.register('mistweaver', {
     for i = -1, GetNumGroupMembers() - 1 do
       local unit = (i == -1 and 'target') or (i == 0 and 'player') or prefix .. i
       if IsItemInRange(33278, unit) or unit == 'player' then
-        local diff = UnitHealthMax(unit) - UnitHealth(unit) + UnitGetIncomingHeals(unit) - UnitGetTotalHealAbsorbs(unit)
+        local diff = getHealth(unit)
         if diff > minHeal then
           inRange = inRange + 1
         end
